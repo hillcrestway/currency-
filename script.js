@@ -1,6 +1,9 @@
 const API_URL = "https://api.frankfurter.app";
 const CRYPTO_API_URL = "https://api.coingecko.com/api/v3/simple/price";
 
+console.log("Script loaded successfully!");
+console.log(typeof convert); // Should print "function"
+
 let chartInstance = null;
 
 // Populate currency dropdowns
