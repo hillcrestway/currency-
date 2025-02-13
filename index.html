@@ -3,167 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6427298124628886"
-     crossorigin="anonymous"></script>
     <title>Currency Converter</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 100%;
-            max-width: 450px;
-            transition: all 0.3s ease-in-out;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            transition: all 0.3s ease-in-out;
-        }
-        input:focus, select:focus {
-            border-color: #2a5298;
-            outline: none;
-            box-shadow: 0 0 8px rgba(42, 82, 152, 0.2);
-        }
-        button {
-            background: #ff4b5c;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: background 0.3s ease-in-out;
-        }
-        button:hover {
-            background: #d43f4e;
-        }
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #222;
-        }
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px;
-            }
-            h2 {
-                font-size: 22px;
-            }
-            input, select, button {
-                font-size: 14px;
-                padding: 12px;
-            }
-        }
-        @media (max-width: 400px) {
-            h2 {
-                font-size: 20px;
-            }
-            input, select, button {
-                font-size: 12px;
-                padding: 10px;
-            }
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Google Ads Conversion Tracking -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'AW-CONVERSION_ID'); // Replace with actual Google Ads Conversion ID
-    </script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <h2>Currency Converter</h2>
         <input type="number" id="amount" placeholder="Enter amount" />
-        <select id="fromCurrency">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="BRL">BRL</option>
-            <option value="JPY">JPY</option>
-            <option value="CAD">CAD</option>
-            <option value="AUD">AUD</option>
-            <option value="CNY">CNY</option>
-            <option value="INR">INR</option>
-            <option value="CHF">CHF</option>
-        </select>
-        <select id="toCurrency">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="BRL">BRL</option>
-            <option value="JPY">JPY</option>
-            <option value="CAD">CAD</option>
-            <option value="AUD">AUD</option>
-            <option value="CNY">CNY</option>
-            <option value="INR">INR</option>
-            <option value="CHF">CHF</option>
-        </select>
+        <div class="dropdowns">
+            <select id="fromCurrency"></select>
+            <select id="toCurrency"></select>
+        </div>
         <button onclick="convertCurrency()">Convert</button>
         <h3 id="result"></h3>
+
+        <h2>Exchange Rate Trend (Last 10 Days)</h2>
+        <div class="chart-container">
+            <canvas id="exchangeChart"></canvas>
+        </div>
     </div>
-    <script>
-        async function convertCurrency() {
-            const amount = document.getElementById("amount").value;
-            const fromCurrency = document.getElementById("fromCurrency").value;
-            const toCurrency = document.getElementById("toCurrency").value;
-            
-            if (!amount) {
-                alert("Please enter an amount");
-                return;
-            }
-            
-            const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${fromCurrency}`);
-            const data = await response.json();
-            const rate = data.rates[toCurrency];
-            const result = amount * rate;
-            
-            document.getElementById("result").innerText = `${amount} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
-            
-            // Google Ads Conversion Tracking
-            gtag('event', 'conversion', {
-                'send_to': 'AW-CONVERSION_ID',
-                'value': amount,
-                'currency': fromCurrency,
-                'transaction_id': new Date().getTime()
-            });
-        }
-    </script>
-    <!-- Google Ads Remarketing Tag -->
-    <script>
-        gtag('event', 'page_view', {
-            'send_to': 'AW-CONVERSION_ID',
-            'user_status': 'visitor'
-        });
-    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
