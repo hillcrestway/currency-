@@ -117,5 +117,42 @@ function updateChart(labels, data) {
     });
 }
 
+// Convert between fiat and crypto
+async function convert(direction) {
+  const amount = document.getElementById("amount2").value;
+  const currency = document.getElementById("currency").value;
+  const crypto = document.getElementById("crypto").value;
+  
+  if (!amount) {
+      alert("Please enter an amount.");
+      return;
+  }
+  
+  try {
+      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${crypto}&vs_currencies=${currency}`);
+      const data = await response.json();
+      console.log("API Response:", data);
+      
+      if (!data[crypto] || !data[crypto][currency]) {
+          alert("Error fetching exchange rate. Try again later.");
+          return;
+      }
+      
+      const rate = data[crypto][currency];
+      let result;
+      
+      if (direction === 'crypto-to-fiat') {
+          result = (amount * rate).toFixed(2) + ` ${currency.toUpperCase()}`;
+      } else {
+          result = (amount / rate).toFixed(6) + ` ${crypto.toUpperCase()}`;
+      }
+      
+      document.getElementById("result2").innerText = `Converted Amount: ${result}`;
+  } catch (error) {
+      console.error("Error fetching conversion rate:", error);
+      alert("Failed to fetch conversion rate. Check console for details.");
+  }
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", populateCurrencies);
