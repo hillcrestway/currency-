@@ -1,4 +1,6 @@
 const API_URL = "https://api.frankfurter.app";
+const CRYPTO_API_URL = "https://api.coingecko.com/api/v3/simple/price";
+
 let chartInstance = null;
 
 // Populate currency dropdowns
@@ -25,9 +27,9 @@ async function populateCurrencies() {
     }
 }
 
-// Convert currency
+// Convert regular currency
 async function convertCurrency() {
-    const amount = document.getElementById("amount").value;
+    const amount = document.getElementById("amountCurrency").value;
     const fromCurrency = document.getElementById("fromCurrency").value;
     const toCurrency = document.getElementById("toCurrency").value;
 
@@ -42,7 +44,7 @@ async function convertCurrency() {
         const rate = data.rates[toCurrency];
         const result = amount * rate;
 
-        document.getElementById("result").innerText = `${amount} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
+        document.getElementById("resultCurrency").innerText = `${amount} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
 
         fetchHistoricalData(fromCurrency, toCurrency);
     } catch (error) {
@@ -105,53 +107,48 @@ function updateChart(labels, data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { font: { size: 14, weight: "bold" } } },
-                tooltip: { backgroundColor: "#222", titleFont: { size: 16, weight: "bold" }, bodyFont: { size: 14 }, padding: 10, displayColors: false }
-            },
             scales: {
-                x: { ticks: { font: { size: 13 } }, grid: { display: false } },
-                y: { ticks: { font: { size: 13 } }, grid: { color: "rgba(0, 0, 0, 0.1)", lineWidth: 1 } }
+                x: { ticks: { font: { size: 13 } } },
+                y: { ticks: { font: { size: 13 } } }
             }
         }
     });
 }
 
-// Convert between fiat and crypto
+// Convert Crypto to Fiat and vice versa
 async function convert(direction) {
-  const amount = document.getElementById("amount2").value;
-  const currency = document.getElementById("currency").value;
-  const crypto = document.getElementById("crypto").value;
+    const amount = document.getElementById("amountCrypto").value;
+    const currency = document.getElementById("currency").value;
+    const crypto = document.getElementById("crypto").value;
   
-  if (!amount) {
-      alert("Please enter an amount.");
-      return;
-  }
+    if (!amount) {
+        alert("Please enter an amount.");
+        return;
+    }
   
-  try {
-      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${crypto}&vs_currencies=${currency}`);
-      const data = await response.json();
-      console.log("API Response:", data);
+    try {
+        const response = await fetch(`${CRYPTO_API_URL}?ids=${crypto}&vs_currencies=${currency}`);
+        const data = await response.json();
       
-      if (!data[crypto] || !data[crypto][currency]) {
-          alert("Error fetching exchange rate. Try again later.");
-          return;
-      }
+        if (!data[crypto] || !data[crypto][currency]) {
+            alert("Error fetching exchange rate. Try again later.");
+            return;
+        }
       
-      const rate = data[crypto][currency];
-      let result;
+        const rate = data[crypto][currency];
+        let result;
       
-      if (direction === 'crypto-to-fiat') {
-          result = (amount * rate).toFixed(2) + ` ${currency.toUpperCase()}`;
-      } else {
-          result = (amount / rate).toFixed(6) + ` ${crypto.toUpperCase()}`;
-      }
+        if (direction === 'crypto-to-fiat') {
+            result = (amount * rate).toFixed(2) + ` ${currency.toUpperCase()}`;
+        } else {
+            result = (amount / rate).toFixed(6) + ` ${crypto.toUpperCase()}`;
+        }
       
-      document.getElementById("result2").innerText = `Converted Amount: ${result}`;
-  } catch (error) {
-      console.error("Error fetching conversion rate:", error);
-      alert("Failed to fetch conversion rate. Check console for details.");
-  }
+        document.getElementById("resultCrypto").innerText = `Converted Amount: ${result}`;
+    } catch (error) {
+        console.error("Error fetching conversion rate:", error);
+        alert("Failed to fetch conversion rate. Check console for details.");
+    }
 }
 
 // Initialize
