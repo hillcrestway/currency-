@@ -50,48 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Failed to fetch exchange rate. Try again later.");
         }
     }
-
-    // 🎯 Crypto Converter
-    async function convertCrypto(direction) {
-        let amountInput = document.getElementById("cryptoAmount");
-        let currency = document.getElementById("currency").value;
-        let crypto = document.getElementById("crypto").value;
-
-        if (!amountInput || !amountInput.value) {
-            alert("Please enter an amount.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${COINGECKO_URL}?ids=${crypto}&vs_currencies=${currency}`);
-            const data = await response.json();
-
-            if (!data[crypto] || !data[crypto][currency]) {
-                alert("Error fetching exchange rate. Try again later.");
-                return;
-            }
-
-            const rate = data[crypto][currency];
-            let result;
-
-            if (direction === "crypto-to-fiat") {
-                result = (amountInput.value * rate).toFixed(2) + ` ${currency.toUpperCase()}`;
-            } else {
-                result = (amountInput.value / rate).toFixed(6) + ` ${crypto.toUpperCase()}`;
-            }
-
-            document.getElementById("cryptoResult").innerText = `Converted Amount: ${result}`;
-        } catch (error) {
-            console.error("❌ Error fetching conversion rate:", error);
-            alert("Failed to fetch conversion rate. Check console for details.");
-        }
-    }
-
-    // Event Listeners
-    document.getElementById("convertCurrencyBtn").addEventListener("click", convertCurrency);
-    document.getElementById("cryptoToFiatBtn").addEventListener("click", () => convertCrypto("crypto-to-fiat"));
-    document.getElementById("fiatToCryptoBtn").addEventListener("click", () => convertCrypto("fiat-to-crypto"));
-
     // Initialize currency dropdowns
     populateCurrencies();
 });
