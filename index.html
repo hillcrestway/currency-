@@ -3,26 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto & Fiat Converter</title>
+    <title>Currency & Crypto Converter</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <h2>Currency Converter</h2>
-        <input type="number" id="amount" placeholder="Enter amount" min="0">
-        
+        <input type="number" id="amountCurrency" placeholder="Enter amount" min="0" />
         <div class="dropdowns">
             <select id="fromCurrency"></select>
             <select id="toCurrency"></select>
         </div>
-        
-        <button id="convertCurrencyBtn">Convert</button>
-        <h3 id="currencyResult"></h3>
+        <button onclick="convertCurrency()">Convert</button>
+        <h3 id="resultCurrency"></h3>
+
+        <h2>Exchange Rate Trend (Last 10 Days)</h2>
+        <div class="chart-container">
+            <canvas id="exchangeChart"></canvas>
+        </div>
 
         <h2>Crypto to Fiat & Fiat to Crypto Converter</h2>
-        
-        <label for="cryptoAmount">Amount:</label>
-        <input type="number" id="cryptoAmount" placeholder="Enter amount" step="any">
+        <label for="amountCrypto">Amount:</label>
+        <input type="number" id="amountCrypto" placeholder="Enter amount" step="any">
         
         <label for="currency">Currency:</label>
         <select id="currency">
@@ -38,12 +41,11 @@
             <option value="litecoin">Litecoin (LTC)</option>
         </select>
         
-        <button id="cryptoToFiatBtn">Convert to Fiat</button>
-        <button id="fiatToCryptoBtn">Convert to Crypto</button>
+        <button onclick="convert('crypto-to-fiat')">Convert to Fiat</button>
+        <button onclick="convert('fiat-to-crypto')">Convert to Crypto</button>
         
-        <h3 id="cryptoResult"></h3>
+        <h3 id="resultCrypto"></h3>
     </div>
-
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
