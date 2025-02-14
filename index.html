@@ -8,13 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <nav class="nav-bar">
-        <button id="navb" class="nav-button" onclick="showSection('currency')">Currency Converter</button>
-        <button id="navb" class="nav-button" onclick="showSection('crypto')">Crypto Converter</button>
-    </nav>
     
     <div class="container" id="currency-section">
         <h2>Currency Converter</h2>
+
         <input type="number" id="amount" placeholder="Enter amount" min="0" />
         <div class="dropdowns">
             <select id="fromCurrency"></select>
@@ -31,24 +28,7 @@
             <p>&copy; 2023 Currency & Crypto Converter</p>
         </footer>
     </div>
-    
-    <div class="container" id="crypto-section" style="display: none;">
-        <h2>Crypto Converter</h2>
-        <input type="number" id="cryptoAmount" placeholder="Enter amount" min="0" />
-        <div class="dropdowns">
-            <select id="fromCrypto"></select>
-            <select id="toCrypto"></select>
-        </div>
-        <button onclick="convertCrypto()">Convert</button>
-        <h3 id="cryptoResult"></h3>
-    </div>
 
     <script src="script.js" defer></script>
-    <script>
-        function showSection(section) {
-            document.getElementById('currency-section').style.display = (section === 'currency') ? 'block' : 'none';
-            document.getElementById('crypto-section').style.display = (section === 'crypto') ? 'block' : 'none';
-        }
-    </script>
 </body>
 </html>
