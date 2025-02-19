@@ -117,7 +117,9 @@ function updateChart(labels, data) {
     });
 }
 
-
+function toggleMenu() {
+    document.querySelector('.nav-items').classList.toggle('active');
+}
 
 // Initialize
 document.addEventListener("DOMContentLoaded", populateCurrencies);
