@@ -93,6 +93,34 @@ footer {
     }
 }
 
+@media (max-width: 768px) {
+    .nav-items {
+        display: none;
+        flex-direction: column;
+        background: white;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-items.active {
+        display: flex;
+    }
+
+    .nav-link {
+        padding: 15px;
+        display: block;
+        width: 100%;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+}
+
 .navbar {
     position: fixed;
     top: 0;
