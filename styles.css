@@ -136,13 +136,6 @@ footer {
     color: white;
 }
 
-/* Hamburger Menu (Hidden by Default) */
-.menu-toggle {
-    display: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #d43f4e;
-}
 /* Optional: Add some spacing to ensure content doesn't overlap */
 body {
     padding-top: 20px; /* Adjust for the navbar height */
