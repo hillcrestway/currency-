@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto & Currency Converter</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Responsive Navbar -->
+    <div class="container" id="currency-section">
+      <div class="nav-items">
+          <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+          <a href="fiat.html" class="nav-link"><i class="fa-brands fa-bitcoin"></i> Crypto</a>
+          <a href="#" class="nav-link"><i class="fas fa-phone-alt"></i> Contact</a>
+      </div>
+    </div>
+    <br>
+    <!-- Converter Section -->
+    <div class="container">
+      <h2>Fiat & Crypto Converter</h2>
+      <p>
+          Convert between fiat currencies and cryptocurrencies with real-time exchange rates. Select your currency pair, enter an amount, and click "Convert"!
+      </p>
+
+      <h3>Enter Amount:</h3>
+      <input type="number" id="amount" placeholder="Enter amount" min="0" />
+
+      <div class="dropdowns">
+          <h3>From:</h3>
+          <select id="fromCurrency"></select>
+
+          <h3>To:</h3>
+          <select id="toCurrency"></select>
+      </div>
+
+      <button onclick="convert()">Convert</button>
+      <h3 id="result"></h3>
+
+      <footer>
+        <p>&copy; 2025 Currency & Crypto Converter</p>
+        <p><a href="privacy-policy.html" target="_blank">Privacy Policy</a> | <a href="terms-and-conditions.html" target="_blank">Terms and Conditions</a> | <a href="about-us.html" target="_blank">About Us</a> | <a href="contact-us.html" target="_blank">Contact</a></p>
+      </footer>  
+    </div>
+
+
+    <script src="fiat.js" defer></script>
+</body>
+</html>
