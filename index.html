@@ -5,31 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Currency & Crypto Converter</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container" id="currency-section">
-        <div class="nav-items">
-            <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-            <a href="fiat.html" class="nav-link"><i class="fa-brands fa-bitcoin"></i> Crypto</a>
-            <a href="contact-us.html" class="nav-link"><i class="fas fa-phone-alt"></i> Contact</a>
-        </div>
-    </div>
-    <br>
+    
     <div class="container" id="currency-section">
         <h2>Currency Converter</h2>
-        <p>
-            Welcome to the Currency & Crypto Converter! Here, you can easily convert different currencies and view historical exchange rate trends.
-            Whether you're traveling, trading, or just curious, this tool helps you understand how currencies fluctuate over time.
-        </p>
-
-        <h3>How It Works:</h3>
-        <p>
-            Enter the amount you wish to convert, select the currencies you want to exchange, and click "Convert". The exchange rate will be shown 
-            along with the result. You can also explore the exchange rate trend of the selected currencies over the last 10 days with an interactive 
-            chart.
-        </p>
 
         <input type="number" id="amount" placeholder="Enter amount" min="0" />
         <div class="dropdowns">
@@ -40,18 +21,12 @@
         <h3 id="result"></h3>
 
         <h2>Exchange Rate Trend (Last 10 Days)</h2>
-        <p>
-            The chart below shows how the exchange rate between the selected currencies has changed over the last 10 days. 
-            This can help you visualize trends and decide the best time to convert or trade currencies.
-        </p>
         <div class="chart-container">
             <canvas id="exchangeChart"></canvas>
         </div>
-        
         <footer>
-            <p>&copy; 2025 Currency & Crypto Converter</p>
-            <p><a href="privacy-policy.html" target="_blank">Privacy Policy</a> | <a href="terms-and-conditions.html" target="_blank">Terms and Conditions</a> | <a href="about-us.html" target="_blank">About Us</a> | <a href="contact-us.html" target="_blank">Contact</a></p>
-        </footer>        
+            <p>&copy; 2023 Currency & Crypto Converter</p>
+        </footer>
     </div>
 
     <script src="script.js" defer></script>
