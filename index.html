@@ -3,32 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Currency & Crypto Converter</title>
+    <meta name="description" content="Ultimate Finance Tools Dashboard with Real-Time Exchange Rates">
+    <meta name="keywords" content="finance dashboard, currency converter, crypto tracker, stock valuation, portfolio, tax calculator, loan calculator, dividend yield, budget planner, retirement calculator, savings goal, net worth, inflation, investment risk">
+    <meta name="author" content="Finance Tools">
+    <title>🚀 Finance Tools Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    
-    <div class="container" id="currency-section">
-        <h2>Currency Converter</h2>
-
-        <input type="number" id="amount" placeholder="Enter amount" min="0" />
-        <div class="dropdowns">
-            <select id="fromCurrency"></select>
-            <select id="toCurrency"></select>
+    <div class="top-bar">
+        <h1>🚀 Finance Tools</h1>
+        <div>
+            <button onclick="toggleSidebar()">☰ Menu</button>
+            <button onclick="toggleDarkMode()">🌙 Mode</button>
+            <button onclick="refreshAll()">⟳ Refresh</button>
+            <button onclick="showSettings()">⚙ Settings</button>
+            <button onclick="exportAllHistory()">📤 Export All</button>
         </div>
-        <button onclick="convertCurrency()">Convert</button>
-        <h3 id="result"></h3>
+    </div>
+    <div class="status-bar">
+        <span>Last Updated: <span id="last-updated">Just Now</span></span>
+        <span>Status: Online | Auto-Refresh: <span id="auto-refresh-status">Off</span></span>
+    </div>
+    <div class="ticker" id="ticker">Loading exchange rates...</div>
 
-        <h2>Exchange Rate Trend (Last 10 Days)</h2>
-        <div class="chart-container">
-            <canvas id="exchangeChart"></canvas>
+    <div class="overview">
+        <div class="overview-item">
+            <h3>Portfolio Value</h3>
+            <p id="overview-portfolio">$0.00</p>
         </div>
-        <footer>
-            <p>&copy; 2023 Currency & Crypto Converter</p>
-        </footer>
+        <div class="overview-item">
+            <h3>BTC Price</h3>
+            <p id="overview-btc">$0.00</p>
+        </div>
+        <div class="overview-item">
+            <h3>USD/EUR</h3>
+            <p id="overview-usd-eur">0.00</p>
+        </div>
     </div>
 
-    <script src="script.js" defer></script>
+    <div class="container">
+        <div class="sidebar">
+            <input type="text" id="tool-search" placeholder="Search tools..." oninput="searchTools()">
+            <button class="sidebar-btn" onclick="toggleTool('currency')" data-tooltip="Currency Converter"><i class="fas fa-dollar-sign"></i><span>Currency</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('exchange-trends')" data-tooltip="Exchange Rate Trends"><i class="fas fa-chart-line"></i><span>FX Trends</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('crypto')" data-tooltip="Crypto Converter"><i class="fas fa-coins"></i><span>Crypto</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('crypto-trends')" data-tooltip="Crypto Market Trends"><i class="fas fa-chart-bar"></i><span>Crypto Trends</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('stocks')" data-tooltip="Stock Analysis"><i class="fas fa-chart-pie"></i><span>Stocks</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('compound')" data-tooltip="Compound Interest"><i class="fas fa-piggy-bank"></i><span>Compound</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('portfolio')" data-tooltip="Portfolio Tracker"><i class="fas fa-briefcase"></i><span>Portfolio</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('tax')" data-tooltip="Tax Calculator"><i class="fas fa-calculator"></i><span>Tax</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('loan')" data-tooltip="Loan Calculator"><i class="fas fa-hand-holding-usd"></i><span>Loan</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('dividend')" data-tooltip="Dividend Yield"><i class="fas fa-percentage"></i><span>Dividend</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('budget')" data-tooltip="Budget Planner"><i class="fas fa-wallet"></i><span>Budget</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('retirement')" data-tooltip="Retirement Calculator"><i class="fas fa-bed"></i><span>Retirement</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('savings-goal')" data-tooltip="Savings Goal Calculator"><i class="fas fa-sack-dollar"></i><span>Savings Goal</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('net-worth')" data-tooltip="Net Worth Tracker"><i class="fas fa-balance-scale"></i><span>Net Worth</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('inflation')" data-tooltip="Inflation Calculator"><i class="fas fa-arrow-up"></i><span>Inflation</span></button>
+            <button class="sidebar-btn" onclick="toggleTool('risk')" data-tooltip="Investment Risk Analyzer"><i class="fas fa-exclamation-triangle"></i><span>Risk</span></button>
+        </div>
+
+        <div class="main-content">
+            <div class="pinned-tools" id="pinned-tools"></div>
+            <div class="all-tools" id="all-tools">
+                <div id="currency" class="tool-card">
+                    <h2><i class="fas fa-dollar-sign"></i> Currency Converter</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('currency')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('currency')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('currency')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Amount to convert">Amount</label>
+                            <input type="number" id="currency-amount" placeholder="Enter amount" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Source currency">From</label>
+                            <select id="from-currency">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="AUD">AUD - Australian Dollar</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                                <option value="CHF">CHF - Swiss Franc</option>
+                                <option value="CNY">CNY - Chinese Yuan</option>
+                                <option value="INR">INR - Indian Rupee</option>
+                                <option value="BRL">BRL - Brazilian Real</option>
+                                <option value="ZAR">ZAR - South African Rand</option>
+                                <option value="RUB">RUB - Russian Rubles</option>
+                                <option value="SGD">SGD - Singapore Dollar</option>
+                                <option value="NZD">NZD - New Zealand Dollar</option>
+                                <option value="MXN">MXN - Mexican Peso</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Target currency">To</label>
+                            <select id="to-currency">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="AUD">AUD - Australian Dollar</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                                <option value="CHF">CHF - Swiss Franc</option>
+                                <option value="CNY">CNY - Chinese Yuan</option>
+                                <option value="INR">INR - Indian Rupee</option>
+                                <option value="BRL">BRL - Brazilian Real</option>
+                                <option value="ZAR">ZAR - South African Rand</option>
+                                <option value="RUB">RUB - Russian Rubles</option>
+                                <option value="SGD">SGD - Singapore Dollar</option>
+                                <option value="NZD">NZD - New Zealand Dollar</option>
+                                <option value="MXN">MXN - Mexican Peso</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="convertCurrency()">Convert</button>
+                            <button onclick="exportResult('currency')">Export</button>
+                        </div>
+                        <div id="currency-result" class="result"></div>
+                        <div id="currency-error" class="error"></div>
+                        <div id="currency-history" class="history"><button onclick="undoHistory('currency')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="exchange-trends" class="tool-card">
+                    <h2><i class="fas fa-chart-line"></i> Exchange Rate Trends</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('exchange-trends')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('exchange-trends')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('exchange-trends')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Currency pair to track">Currency Pair</label>
+                            <select id="exchange-pair">
+                                <option value="USD-EUR">USD/EUR</option>
+                                <option value="USD-GBP">USD/GBP</option>
+                                <option value="EUR-JPY">EUR/JPY</option>
+                                <option value="USD-CHF">USD/CHF</option>
+                                <option value="USD-CNY">USD/CNY</option>
+                                <option value="USD-INR">USD/INR</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="showExchangeTrends()">Show Trends</button>
+                            <button onclick="exportResult('exchange-trends')">Export</button>
+                        </div>
+                        <div id="exchange-trends-result" class="result"></div>
+                        <div id="exchange-trends-error" class="error"></div>
+                        <div id="exchange-trends-history" class="history"><button onclick="undoHistory('exchange-trends')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="crypto" class="tool-card">
+                    <h2><i class="fas fa-coins"></i> Crypto Converter</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('crypto')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('crypto')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('crypto')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Amount to convert">Amount</label>
+                            <input type="number" id="crypto-amount" placeholder="Enter amount" min="0" step="0.0001">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Source cryptocurrency">From</label>
+                            <select id="from-crypto">
+                                <option value="BTC">BTC - Bitcoin</option>
+                                <option value="ETH">ETH - Ethereum</option>
+                                <option value="XRP">XRP - Ripple</option>
+                                <option value="USDT">USDT - Tether</option>
+                                <option value="BNB">BNB - Binance Coin</option>
+                                <option value="ADA">ADA - Cardano</option>
+                                <option value="SOL">SOL - Solana</option>
+                                <option value="DOGE">DOGE - Dogecoin</option>
+                                <option value="DOT">DOT - Polkadot</option>
+                                <option value="USD">USD - US Dollar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Target cryptocurrency">To</label>
+                            <select id="to-crypto">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="BTC">BTC - Bitcoin</option>
+                                <option value="ETH">ETH - Ethereum</option>
+                                <option value="XRP">XRP - Ripple</option>
+                                <option value="USDT">USDT - Tether</option>
+                                <option value="BNB">BNB - Binance Coin</option>
+                                <option value="ADA">ADA - Cardano</option>
+                                <option value="SOL">SOL - Solana</option>
+                                <option value="DOGE">DOGE - Dogecoin</option>
+                                <option value="DOT">DOT - Polkadot</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="convertCrypto()">Convert</button>
+                            <button onclick="exportResult('crypto')">Export</button>
+                        </div>
+                        <div id="crypto-result" class="result"></div>
+                        <div id="crypto-error" class="error"></div>
+                        <div id="crypto-history" class="history"><button onclick="undoHistory('crypto')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="crypto-trends" class="tool-card">
+                    <h2><i class="fas fa-chart-bar"></i> Crypto Market Trends</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('crypto-trends')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('crypto-trends')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('crypto-trends')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Cryptocurrency to track">Cryptocurrency</label>
+                            <select id="crypto-trend">
+                                <option value="BTC">BTC - Bitcoin</option>
+                                <option value="ETH">ETH - Ethereum</option>
+                                <option value="XRP">XRP - Ripple</option>
+                                <option value="USDT">USDT - Tether</option>
+                                <option value="BNB">BNB - Binance Coin</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="showCryptoTrends()">Show Trends</button>
+                            <button onclick="exportResult('crypto-trends')">Export</button>
+                        </div>
+                        <div id="crypto-trends-result" class="result"></div>
+                        <div id="crypto-trends-error" class="error"></div>
+                        <div id="crypto-trends-history" class="history"><button onclick="undoHistory('crypto-trends')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="stocks" class="tool-card">
+                    <h2><i class="fas fa-chart-pie"></i> Stock Analysis</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('stocks')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('stocks')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('stocks')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Stock ticker symbol">Stock Symbol</label>
+                            <input type="text" id="stock-symbol" placeholder="e.g., AAPL">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual earnings per share">Annual Earnings ($)</label>
+                            <input type="number" id="earnings" placeholder="Enter earnings" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Expected annual growth">Growth Rate (%)</label>
+                            <input type="number" id="growth-rate" placeholder="e.g., 5.5" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Discount rate for valuation">Discount Rate (%)</label>
+                            <input type="number" id="discount-rate" placeholder="e.g., 10" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateStockValue()">Calculate</button>
+                            <button onclick="exportResult('stocks')">Export</button>
+                        </div>
+                        <div id="stock-result" class="result"></div>
+                        <div id="stock-error" class="error"></div>
+                        <div id="stock-history" class="history"><button onclick="undoHistory('stocks')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="compound" class="tool-card">
+                    <h2><i class="fas fa-piggy-bank"></i> Compound Interest</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('compound')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('compound')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('compound')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Initial investment amount">Principal ($)</label>
+                            <input type="number" id="principal" placeholder="Initial investment" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual interest rate">Annual Rate (%)</label>
+                            <input type="number" id="rate" placeholder="e.g., 5" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Investment duration">Years</label>
+                            <input type="number" id="years" placeholder="e.g., 10" min="1" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="How often interest compounds">Compound Frequency</label>
+                            <select id="frequency">
+                                <option value="1">Yearly</option>
+                                <option value="4">Quarterly</option>
+                                <option value="12">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateCompound()">Calculate</button>
+                            <button onclick="exportResult('compound')">Export</button>
+                        </div>
+                        <div id="compound-result" class="result"></div>
+                        <div id="compound-error" class="error"></div>
+                        <div id="compound-history" class="history"><button onclick="undoHistory('compound')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="portfolio" class="tool-card">
+                    <h2><i class="fas fa-briefcase"></i> Portfolio Tracker</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('portfolio')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('portfolio')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('portfolio')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Asset ticker (e.g., BTC, AAPL)">Asset</label>
+                            <input type="text" id="portfolio-asset" placeholder="Enter asset symbol">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Number of units">Quantity</label>
+                            <input type="number" id="portfolio-quantity" placeholder="e.g., 2.5" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Price at purchase">Purchase Price ($)</label>
+                            <input type="number" id="portfolio-price" placeholder="e.g., 50000" min="0" step="0.01">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="addToPortfolio()">Add</button>
+                            <button onclick="exportResult('portfolio')">Export</button>
+                        </div>
+                        <div id="portfolio-result" class="result"></div>
+                        <div id="portfolio-error" class="error"></div>
+                        <div id="portfolio-history" class="history"><button onclick="undoHistory('portfolio')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="tax" class="tool-card">
+                    <h2><i class="fas fa-calculator"></i> Tax Calculator</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('tax')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('tax')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('tax')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Annual taxable income">Income ($)</label>
+                            <input type="number" id="tax-income" placeholder="Annual income" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Applicable tax rate">Tax Rate (%)</label>
+                            <input type="number" id="tax-rate" placeholder="e.g., 20" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Tax deductions">Deductions ($)</label>
+                            <input type="number" id="tax-deductions" placeholder="e.g., 5000" min="0" step="0.01">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateTax()">Calculate</button>
+                            <button onclick="exportResult('tax')">Export</button>
+                        </div>
+                        <div id="tax-result" class="result"></div>
+                        <div id="tax-error" class="error"></div>
+                        <div id="tax-history" class="history"><button onclick="undoHistory('tax')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="loan" class="tool-card">
+                    <h2><i class="fas fa-hand-holding-usd"></i> Loan Calculator</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('loan')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('loan')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('loan')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Total loan amount">Loan Amount ($)</label>
+                            <input type="number" id="loan-amount" placeholder="e.g., 10000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual interest rate">Annual Interest Rate (%)</label>
+                            <input type="number" id="loan-rate" placeholder="e.g., 5" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Loan duration">Loan Term (Years)</label>
+                            <input type="number" id="loan-years" placeholder="e.g., 5" min="1" step="1">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateLoan()">Calculate</button>
+                            <button onclick="exportResult('loan')">Export</button>
+                        </div>
+                        <div id="loan-result" class="result"></div>
+                        <div id="loan-error" class="error"></div>
+                        <div id="loan-history" class="history"><button onclick="undoHistory('loan')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="dividend" class="tool-card">
+                    <h2><i class="fas fa-percentage"></i> Dividend Yield</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('dividend')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('dividend')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('dividend')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Stock ticker symbol">Stock Symbol</label>
+                            <input type="text" id="dividend-symbol" placeholder="e.g., AAPL">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual dividend per share">Annual Dividend ($)</label>
+                            <input type="number" id="dividend-amount" placeholder="e.g., 0.82" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Current stock price">Stock Price ($)</label>
+                            <input type="number" id="dividend-price" placeholder="e.g., 150" min="0" step="0.01">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateDividend()">Calculate</button>
+                            <button onclick="exportResult('dividend')">Export</button>
+                        </div>
+                        <div id="dividend-result" class="result"></div>
+                        <div id="dividend-error" class="error"></div>
+                        <div id="dividend-history" class="history"><button onclick="undoHistory('dividend')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="budget" class="tool-card">
+                    <h2><i class="fas fa-wallet"></i> Budget Planner</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('budget')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('budget')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('budget')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Monthly income">Income ($)</label>
+                            <input type="number" id="budget-income" placeholder="e.g., 5000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Monthly fixed expenses">Fixed Expenses ($)</label>
+                            <input type="number" id="budget-fixed" placeholder="e.g., 2000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Monthly variable expenses">Variable Expenses ($)</label>
+                            <input type="number" id="budget-variable" placeholder="e.g., 1000" min="0" step="0.01">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateBudget()">Calculate</button>
+                            <button onclick="exportResult('budget')">Export</button>
+                        </div>
+                        <div id="budget-result" class="result"></div>
+                        <div id="budget-error" class="error"></div>
+                        <div id="budget-history" class="history"><button onclick="undoHistory('budget')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="retirement" class="tool-card">
+                    <h2><i class="fas fa-bed"></i> Retirement Calculator</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('retirement')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('retirement')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('retirement')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Current savings">Current Savings ($)</label>
+                            <input type="number" id="retirement-savings" placeholder="e.g., 10000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual contribution">Annual Contribution ($)</label>
+                            <input type="number" id="retirement-contribution" placeholder="e.g., 5000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Expected annual return">Return Rate (%)</label>
+                            <input type="number" id="retirement-rate" placeholder="e.g., 7" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Years until retirement">Years to Retirement</label>
+                            <input type="number" id="retirement-years" placeholder="e.g., 30" min="1" step="1">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateRetirement()">Calculate</button>
+                            <button onclick="exportResult('retirement')">Export</button>
+                        </div>
+                        <div id="retirement-result" class="result"></div>
+                        <div id="retirement-error" class="error"></div>
+                        <div id="retirement-history" class="history"><button onclick="undoHistory('retirement')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="savings-goal" class="tool-card">
+                    <h2><i class="fas fa-sack-dollar"></i> Savings Goal Calculator</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('savings-goal')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('savings-goal')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('savings-goal')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Target savings amount">Goal Amount ($)</label>
+                            <input type="number" id="savings-goal-amount" placeholder="e.g., 10000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Current savings">Current Savings ($)</label>
+                            <input type="number" id="savings-goal-current" placeholder="e.g., 2000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Monthly contribution">Monthly Savings ($)</label>
+                            <input type="number" id="savings-goal-monthly" placeholder="e.g., 500" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual interest rate">Interest Rate (%)</label>
+                            <input type="number" id="savings-goal-rate" placeholder="e.g., 2" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateSavingsGoal()">Calculate</button>
+                            <button onclick="exportResult('savings-goal')">Export</button>
+                        </div>
+                        <div id="savings-goal-result" class="result"></div>
+                        <div id="savings-goal-error" class="error"></div>
+                        <div id="savings-goal-history" class="history"><button onclick="undoHistory('savings-goal')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="net-worth" class="tool-card">
+                    <h2><i class="fas fa-balance-scale"></i> Net Worth Tracker</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('net-worth')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('net-worth')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('net-worth')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Total value of assets">Assets ($)</label>
+                            <input type="number" id="net-worth-assets" placeholder="e.g., 50000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Total value of liabilities">Liabilities ($)</label>
+                            <input type="number" id="net-worth-liabilities" placeholder="e.g., 20000" min="0" step="0.01">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateNetWorth()">Calculate</button>
+                            <button onclick="exportResult('net-worth')">Export</button>
+                        </div>
+                        <div id="net-worth-result" class="result"></div>
+                        <div id="net-worth-error" class="error"></div>
+                        <div id="net-worth-history" class="history"><button onclick="undoHistory('net-worth')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="inflation" class="tool-card">
+                    <h2><i class="fas fa-arrow-up"></i> Inflation Calculator</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('inflation')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('inflation')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('inflation')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Initial amount">Amount ($)</label>
+                            <input type="number" id="inflation-amount" placeholder="e.g., 1000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual inflation rate">Inflation Rate (%)</label>
+                            <input type="number" id="inflation-rate" placeholder="e.g., 3" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Number of years">Years</label>
+                            <input type="number" id="inflation-years" placeholder="e.g., 10" min="1" step="1">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateInflation()">Calculate</button>
+                            <button onclick="exportResult('inflation')">Export</button>
+                        </div>
+                        <div id="inflation-result" class="result"></div>
+                        <div id="inflation-error" class="error"></div>
+                        <div id="inflation-history" class="history"><button onclick="undoHistory('inflation')">Undo</button></div>
+                    </div>
+                </div>
+
+                <div id="risk" class="tool-card">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Investment Risk Analyzer</h2>
+                    <div class="tool-actions">
+                        <button onclick="toggleCollapse('risk')"><i class="fas fa-minus"></i></button>
+                        <button onclick="toggleFavorite('risk')"><i class="fas fa-star"></i></button>
+                        <button onclick="pinTool('risk')"><i class="fas fa-thumbtack"></i></button>
+                    </div>
+                    <div class="tool-form">
+                        <div class="form-group">
+                            <label data-tooltip="Investment amount">Investment ($)</label>
+                            <input type="number" id="risk-amount" placeholder="e.g., 10000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Expected annual return">Expected Return (%)</label>
+                            <input type="number" id="risk-return" placeholder="e.g., 8" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Annual volatility (standard deviation)">Volatility (%)</label>
+                            <input type="number" id="risk-volatility" placeholder="e.g., 15" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label data-tooltip="Investment duration">Years</label>
+                            <input type="number" id="risk-years" placeholder="e.g., 5" min="1" step="1">
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="calculateRisk()">Calculate</button>
+                            <button onclick="exportResult('risk')">Export</button>
+                        </div>
+                        <div id="risk-result" class="result"></div>
+                        <div id="risk-error" class="error"></div>
+                        <div id="risk-history" class="history"><button onclick="undoHistory('risk')">Undo</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="welcome-modal" class="modal">
+        <div class="modal-content">
+            <h2>Welcome to Finance Tools!</h2>
+            <p>Real-time rates powered by CurrencyLayer & CoinGecko.</p>
+            <button onclick="closeModal()">Get Started</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>Settings</h2>
+            <div class="form-group">
+                <label data-tooltip="Set refresh frequency">Auto-Refresh Interval (seconds)</label>
+                <input type="number" id="refresh-interval" min="5" step="5" value="30">
+            </div>
+            <button onclick="saveSettings()">Save</button>
+            <button onclick="closeSettings()">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 🚀 Finance Tools. Powered by <a href="https://currencylayer.com" target="_blank">CurrencyLayer</a> & <a href="https://coingecko.com" target="_blank">CoinGecko</a>.</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
